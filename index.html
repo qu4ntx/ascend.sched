@@ -3,32 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Club Schedule</title>
+    <title>ASCEND Club Schedule</title>
+    <style>
+        body {
+            background-color: #F1C40F; /* Club's yellow */
+            color: black;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .day-container {
+            background-color: black;
+            color: #F1C40F;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .day-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .schedule-item {
+            background-color: #F1C40F;
+            color: black;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .schedule-item p {
+            margin: 0;
+        }
+
+        .schedule-item .location {
+            font-style: italic;
+        }
+
+        .no-schedule {
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-    <h1>Club Schedule</h1>
+
+<div class="container">
+    <div class="header">
+        <h1>ASCEND Club Schedule</h1>
+    </div>
     <div id="schedule"></div>
+</div>
 
-    <script>
-        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT5U-kYeEl5v6E7sKY2lwFprx9hkxmmWnuOvqkAWpqpyqaVwXAiblbw9Vz_pYewKuH95k10O_yA1hkH/pub?gid=0&single=true&output=csv';
+<script>
+    const scheduleData = [
+        {
+            day: "Monday",
+            schedules: [
+                { name: "Rock Climbing", time: "4:00 PM", location: "E5" },
+                { name: "", time: "", location: "" },
+                { name: "", time: "", location: "" }
+            ]
+        },
+        {
+            day: "Wednesday",
+            schedules: [
+                { name: "Rock Climbing", time: "4:00 PM", location: "E5" }
+            ]
+        },
+        {
+            day: "Friday",
+            schedules: [
+                { name: "Futsal", time: "5:00 PM", location: "Gym" }
+            ]
+        }
+    ];
 
-        fetch(CSV_URL)
-            .then(response => response.text())
-            .then(csv => {
-                const rows = csv.split('\n');
-                let tableHTML = '<table border="1">';
-                rows.forEach(row => {
-                    const cells = row.split(',');
-                    tableHTML += '<tr>';
-                    cells.forEach(cell => {
-                        tableHTML += `<td>${cell}</td>`;
-                    });
-                    tableHTML += '</tr>';
-                });
-                tableHTML += '</table>';
-                document.getElementById('schedule').innerHTML = tableHTML;
-            })
-            .catch(error => console.error('Error fetching data:', error));
-    </script>
+    function renderSchedule() {
+        const container = document.getElementById('schedule');
+        scheduleData.forEach(dayData => {
+            const dayContainer = document.createElement('div');
+            dayContainer.classList.add('day-container');
+
+            const dayTitle = document.createElement('h2');
+            dayTitle.classList.add('day-title');
+            dayTitle.innerText = dayData.day;
+            dayContainer.appendChild(dayTitle);
+
+            let previousLocation = '';
+            dayData.schedules.forEach(schedule => {
+                if (schedule.name !== "" && schedule.time !== "") {
+                    const scheduleItem = document.createElement('div');
+                    scheduleItem.classList.add('schedule-item');
+
+                    const name = document.createElement('p');
+                    name.innerText = schedule.name;
+                    scheduleItem.appendChild(name);
+
+                    const time = document.createElement('p');
+                    time.innerText = schedule.time;
+                    scheduleItem.appendChild(time);
+
+                    if (schedule.location !== previousLocation) {
+                        const location = document.createElement('p');
+                        location.classList.add('location');
+                        location.innerText = schedule.location;
+                        scheduleItem.appendChild(location);
+                        previousLocation = schedule.location;
+                    }
+
+                    dayContainer.appendChild(scheduleItem);
+                }
+            });
+
+            container.appendChild(dayContainer);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', renderSchedule);
+</script>
+
 </body>
 </html>
