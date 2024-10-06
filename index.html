@@ -3,25 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Schedule from Google Sheets</title>
+    <title>Club Schedule</title>
 </head>
 <body>
     <h1>Club Schedule</h1>
     <div id="schedule"></div>
 
     <script>
-        const API_KEY = 'your-google-api-key'; // Replace with your actual API key
-        const SHEET_ID = '1fHALsnQQf5_jgUMAZdORvhEov4KlmnQ3ZWlcwifc2c8';
-        const RANGE = 'A1:J17'; // Adjust this range if your data changes
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT5U-kYeEl5v6E7sKY2lwFprx9hkxmmWnuOvqkAWpqpyqaVwXAiblbw9Vz_pYewKuH95k10O_yA1hkH/pub?gid=0&single=true&output=csv';
 
-        fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`)
-            .then(response => response.json())
-            .then(data => {
-                const schedule = data.values;
+        fetch(CSV_URL)
+            .then(response => response.text())
+            .then(csv => {
+                const rows = csv.split('\n');
                 let tableHTML = '<table border="1">';
-                schedule.forEach(row => {
+                rows.forEach(row => {
+                    const cells = row.split(',');
                     tableHTML += '<tr>';
-                    row.forEach(cell => {
+                    cells.forEach(cell => {
                         tableHTML += `<td>${cell}</td>`;
                     });
                     tableHTML += '</tr>';
