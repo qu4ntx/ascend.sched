@@ -85,25 +85,27 @@
 
     function processCSVData(rows) {
         const scheduleData = [];
-        rows.forEach(row => {
+        rows.slice(1).forEach(row => { // Start from row 1 to skip headers
             const cells = row.split(',');
 
-            if (cells[1]) {  // If there is a valid day
+            if (cells[1] && cells[1] !== "Day") {  // If there is a valid day and it’s not a header
                 const dayIndex = scheduleData.findIndex(data => data.day === cells[1]);
-                
+
                 const schedule = {
                     name: cells[0],  // Name of the activity
                     time: cells[2],  // Time
                     location: cells[3] // Location
                 };
-                
-                if (dayIndex !== -1) {
-                    scheduleData[dayIndex].schedules.push(schedule);
-                } else {
-                    scheduleData.push({
-                        day: cells[1],
-                        schedules: [schedule]
-                    });
+
+                if (schedule.name && schedule.time && schedule.location !== "0") {
+                    if (dayIndex !== -1) {
+                        scheduleData[dayIndex].schedules.push(schedule);
+                    } else {
+                        scheduleData.push({
+                            day: cells[1],
+                            schedules: [schedule]
+                        });
+                    }
                 }
             }
         });
@@ -123,28 +125,26 @@
 
             let previousLocation = '';
             dayData.schedules.forEach(schedule => {
-                if (schedule.name && schedule.time) {
-                    const scheduleItem = document.createElement('div');
-                    scheduleItem.classList.add('schedule-item');
+                const scheduleItem = document.createElement('div');
+                scheduleItem.classList.add('schedule-item');
 
-                    const name = document.createElement('p');
-                    name.innerText = schedule.name;
-                    scheduleItem.appendChild(name);
+                const name = document.createElement('p');
+                name.innerText = schedule.name;
+                scheduleItem.appendChild(name);
 
-                    const time = document.createElement('p');
-                    time.innerText = schedule.time;
-                    scheduleItem.appendChild(time);
+                const time = document.createElement('p');
+                time.innerText = schedule.time;
+                scheduleItem.appendChild(time);
 
-                    if (schedule.location !== previousLocation && schedule.location !== '0') {
-                        const location = document.createElement('p');
-                        location.classList.add('location');
-                        location.innerText = schedule.location;
-                        scheduleItem.appendChild(location);
-                        previousLocation = schedule.location;
-                    }
-
-                    dayContainer.appendChild(scheduleItem);
+                if (schedule.location !== previousLocation) {
+                    const location = document.createElement('p');
+                    location.classList.add('location');
+                    location.innerText = schedule.location;
+                    scheduleItem.appendChild(location);
+                    previousLocation = schedule.location;
                 }
+
+                dayContainer.appendChild(scheduleItem);
             });
 
             container.appendChild(dayContainer);
