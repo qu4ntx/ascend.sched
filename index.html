@@ -88,16 +88,17 @@
         rows.slice(1).forEach(row => { // Start from row 1 to skip headers
             const cells = row.split(',');
 
-            if (cells[1] && cells[1] !== "Day") {  // If there is a valid day and it’s not a header
+            // Check for valid day (skip any rows without a day value)
+            if (cells[1] && cells[1] !== "Day") {
                 const dayIndex = scheduleData.findIndex(data => data.day === cells[1]);
 
                 const schedule = {
                     name: cells[0],  // Name of the activity
-                    time: cells[2],  // Time
-                    location: cells[3] // Location
+                    time: cells[2] || "TBA",  // Time (default to TBA if empty)
+                    location: cells[3] || "Location TBA" // Location (default to TBA if empty)
                 };
 
-                if (schedule.name && schedule.time && schedule.location !== "0") {
+                if (schedule.name) {
                     if (dayIndex !== -1) {
                         scheduleData[dayIndex].schedules.push(schedule);
                     } else {
