@@ -54,10 +54,10 @@
         .day-title {
             font-size: 16px;
             font-weight: bold;
-            color: #FFD700; /* Neon gold color */
+            color: #4a4a4a;
             margin-bottom: 10px;
             text-align: left;
-            border-bottom: 2px solid #FFD700; /* Neon gold border */
+            border-bottom: 2px solid #ccc;
             width: 100%;
         }
 
@@ -68,7 +68,9 @@
             border-radius: 5px;
             font-size: 14px;
             color: #333;
-            border-left: 4px solid #FFD700; /* Neon gold accent */
+            display: flex;
+            align-items: center;
+            border-left: 4px solid #FFCC00; /* Accent color applied only to the left */
         }
 
         .schedule-item p {
@@ -77,14 +79,23 @@
 
         .schedule-item .location {
             font-style: italic;
-            color: #999;
+            color: #666;
         }
 
-        /* Sports name styling */
-        .sports-name {
-            color: #FFD700;
-            font-weight: bold;
-            font-size: 15px;
+        /* Accent color block for sports */
+        .schedule-item .accent-block {
+            background-color: #FFCC00;
+            width: 4px;
+            height: 100%;
+            margin-right: 10px;
+            border-radius: 3px 0 0 3px; /* Rounded left side */
+        }
+
+        /* Adjust font colors */
+        .schedule-item .time,
+        .schedule-item .location,
+        .schedule-item .sport-name {
+            color: #333; /* Black or appropriate variation */
         }
 
         @media (max-width: 800px) {
@@ -132,22 +143,22 @@
             const cells = row.split(',');
 
             if (cells[0] && cells[1] && cells[2] && cells[3]) {
-                addSchedule(scheduleData, cells[0], cells[1], cells[2], cells[3]);
+                addSchedule(scheduleData, cells[1], cells[2], cells[3], cells[0]);
             }
             if (cells[4] && cells[5] && cells[6]) {
-                addSchedule(scheduleData, cells[0], cells[4], cells[5], cells[6]);
+                addSchedule(scheduleData, cells[4], cells[5], cells[6], cells[0]);
             }
         });
 
         return scheduleData;
     }
 
-    function addSchedule(scheduleData, sportName, day, time, location) {
+    function addSchedule(scheduleData, day, time, location, sportName) {
         const schedule = {
-            sportName: sportName,
             day: day,
             time: time,
-            location: location
+            location: location,
+            sportName: sportName
         };
         scheduleData.push(schedule);
     }
@@ -155,6 +166,7 @@
     function renderSchedule(scheduleData) {
         const container = document.getElementById('schedule');
         const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        
         daysOfWeek.forEach(day => {
             const dayContainer = document.createElement('div');
             dayContainer.classList.add('day-container');
@@ -164,34 +176,59 @@
             dayTitle.innerText = day;
             dayContainer.appendChild(dayTitle);
 
-            scheduleData.forEach(schedule => {
-                if (schedule.day === day) {
-                    const scheduleItem = document.createElement('div');
-                    scheduleItem.classList.add('schedule-item');
+            // Filter schedules for the current day
+            let daySchedules = scheduleData.filter(schedule => schedule.day === day);
 
-                    // Display sports name
-                    const sportName = document.createElement('p');
-                    sportName.classList.add('sports-name');
-                    sportName.innerText = schedule.sportName;
-                    scheduleItem.appendChild(sportName);
+            // Sort schedules by time (convert times to 24-hour format)
+            daySchedules.sort((a, b) => convertTo24Hour(a.time) - convertTo24Hour(b.time));
 
-                    // Display time
-                    const time = document.createElement('p');
-                    time.innerText = schedule.time;
-                    scheduleItem.appendChild(time);
+            daySchedules.forEach(schedule => {
+                const scheduleItem = document.createElement('div');
+                scheduleItem.classList.add('schedule-item');
 
-                    // Display location
-                    const location = document.createElement('p');
-                    location.classList.add('location');
-                    location.innerText = schedule.location;
-                    scheduleItem.appendChild(location);
+                // Display accent color block
+                const accentBlock = document.createElement('div');
+                accentBlock.classList.add('accent-block');
+                scheduleItem.appendChild(accentBlock);
 
-                    dayContainer.appendChild(scheduleItem);
-                }
+                // Display sport name
+                const sportName = document.createElement('p');
+                sportName.classList.add('sport-name');
+                sportName.innerText = schedule.sportName;
+                scheduleItem.appendChild(sportName);
+
+                // Display time
+                const time = document.createElement('p');
+                time.classList.add('time');
+                time.innerText = schedule.time;
+                scheduleItem.appendChild(time);
+
+                // Display location
+                const location = document.createElement('p');
+                location.classList.add('location');
+                location.innerText = schedule.location;
+                scheduleItem.appendChild(location);
+
+                dayContainer.appendChild(scheduleItem);
             });
 
             container.appendChild(dayContainer);
         });
+    }
+
+    // Helper function to convert 12-hour time format to 24-hour format (as a number for sorting)
+    function convertTo24Hour(time) {
+        const [hours, minutes] = time.split(/[: ]/);  // Split time string into components (hours, minutes)
+        let period = time.slice(-2).toUpperCase();    // Extract AM/PM
+
+        let hourNum = parseInt(hours);
+        if (period === 'PM' && hourNum < 12) {
+            hourNum += 12;
+        }
+        if (period === 'AM' && hourNum === 12) {
+            hourNum = 0;
+        }
+        return hourNum * 60 + parseInt(minutes);  // Return the total minutes since midnight
     }
 
     document.addEventListener('DOMContentLoaded', fetchAndRenderSchedule);
