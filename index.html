@@ -6,58 +6,69 @@
     <title>ASCEND Club Schedule</title>
     <style>
         body {
-            background-color: #F1C40F; /* Club's yellow */
-            color: black;
-            font-family: Arial, sans-serif;
+            background-color: #fafafa; /* light background */
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
         }
 
         .container {
-            width: 90%;
+            width: 95%;
             max-width: 1200px;
             padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 40px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
         }
 
-        /* Layout for 3 columns */
+        /* Grid layout */
         .schedule-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 equal-width columns */
-            gap: 20px;
+            grid-template-columns: repeat(7, 1fr); /* 7 columns for the days of the week */
+            gap: 10px;
         }
 
-        .sport-container {
-            background-color: black;
-            color: #F1C40F;
+        .day-container {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
             padding: 15px;
-            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
         }
 
-        .sport-title {
-            font-size: 20px;
+        .day-title {
+            font-size: 16px;
             font-weight: bold;
+            color: #4a4a4a;
             margin-bottom: 10px;
-            text-align: center;
+            text-align: left;
+            border-bottom: 2px solid #ccc;
+            width: 100%;
         }
 
         .schedule-item {
-            background-color: #F1C40F;
-            color: black;
-            margin: 10px 0;
+            background-color: #f5f5f5;
             padding: 10px;
+            margin: 5px 0;
             border-radius: 5px;
+            font-size: 14px;
+            color: #333;
+            border-left: 4px solid #4a90e2;
         }
 
         .schedule-item p {
@@ -66,18 +77,18 @@
 
         .schedule-item .location {
             font-style: italic;
+            color: #999;
         }
 
-        /* Responsive design for smaller screens */
         @media (max-width: 800px) {
             .schedule-grid {
-                grid-template-columns: repeat(2, 1fr); /* Switch to 2 columns on smaller screens */
+                grid-template-columns: repeat(3, 1fr); /* 3 columns on medium screens */
             }
         }
 
         @media (max-width: 500px) {
             .schedule-grid {
-                grid-template-columns: 1fr; /* Switch to 1 column on mobile */
+                grid-template-columns: 1fr; /* 1 column on small screens */
             }
         }
     </style>
@@ -88,7 +99,9 @@
     <div class="header">
         <h1>ASCEND Club Schedule</h1>
     </div>
-    <div class="schedule-grid" id="schedule"></div>
+    <div class="schedule-grid" id="schedule">
+        <!-- Schedule will be populated here -->
+    </div>
 </div>
 
 <script>
@@ -108,76 +121,60 @@
     function processCSVData(rows) {
         const scheduleData = [];
 
-        rows.slice(1).forEach(row => {  // Start from row 1 to skip headers
+        rows.slice(1).forEach(row => {
             const cells = row.split(',');
 
-            // Handle Schedule 1
             if (cells[0] && cells[1] && cells[2] && cells[3]) {
-                addSchedule(scheduleData, cells[0], cells[1], cells[2], cells[3]);
+                addSchedule(scheduleData, cells[1], cells[2], cells[3]);
             }
-            // Handle Schedule 2
-            if (cells[0] && cells[4] && cells[5] && cells[6]) {
-                addSchedule(scheduleData, cells[0], cells[4], cells[5], cells[6]);
-            }
-            // Handle Schedule 3
-            if (cells[0] && cells[7] && cells[8] && cells[9]) {
-                addSchedule(scheduleData, cells[0], cells[7], cells[8], cells[9]);
+            if (cells[4] && cells[5] && cells[6]) {
+                addSchedule(scheduleData, cells[4], cells[5], cells[6]);
             }
         });
 
         return scheduleData;
     }
 
-    function addSchedule(scheduleData, sport, day, time, location) {
+    function addSchedule(scheduleData, day, time, location) {
         const schedule = {
             day: day,
             time: time,
             location: location
         };
-
-        const sportIndex = scheduleData.findIndex(data => data.sport === sport);
-        if (sportIndex !== -1) {
-            scheduleData[sportIndex].schedules.push(schedule);
-        } else {
-            scheduleData.push({
-                sport: sport,
-                schedules: [schedule]
-            });
-        }
+        scheduleData.push(schedule);
     }
 
     function renderSchedule(scheduleData) {
         const container = document.getElementById('schedule');
-        scheduleData.forEach(sportData => {
-            const sportContainer = document.createElement('div');
-            sportContainer.classList.add('sport-container');
+        const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        daysOfWeek.forEach(day => {
+            const dayContainer = document.createElement('div');
+            dayContainer.classList.add('day-container');
 
-            const sportTitle = document.createElement('h2');
-            sportTitle.classList.add('sport-title');
-            sportTitle.innerText = sportData.sport;
-            sportContainer.appendChild(sportTitle);
+            const dayTitle = document.createElement('div');
+            dayTitle.classList.add('day-title');
+            dayTitle.innerText = day;
+            dayContainer.appendChild(dayTitle);
 
-            sportData.schedules.forEach(schedule => {
-                const scheduleItem = document.createElement('div');
-                scheduleItem.classList.add('schedule-item');
+            scheduleData.forEach(schedule => {
+                if (schedule.day === day) {
+                    const scheduleItem = document.createElement('div');
+                    scheduleItem.classList.add('schedule-item');
 
-                const day = document.createElement('p');
-                day.innerText = schedule.day;
-                scheduleItem.appendChild(day);
+                    const time = document.createElement('p');
+                    time.innerText = schedule.time;
+                    scheduleItem.appendChild(time);
 
-                const time = document.createElement('p');
-                time.innerText = schedule.time;
-                scheduleItem.appendChild(time);
+                    const location = document.createElement('p');
+                    location.classList.add('location');
+                    location.innerText = schedule.location;
+                    scheduleItem.appendChild(location);
 
-                const location = document.createElement('p');
-                location.classList.add('location');
-                location.innerText = schedule.location;
-                scheduleItem.appendChild(location);
-
-                sportContainer.appendChild(scheduleItem);
+                    dayContainer.appendChild(scheduleItem);
+                }
             });
 
-            container.appendChild(sportContainer);
+            container.appendChild(dayContainer);
         });
     }
 
