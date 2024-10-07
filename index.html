@@ -11,19 +11,24 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full viewport height */
         }
 
         .container {
-            width: 80%;
-            margin: 20px auto;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 columns */
-            gap: 20px; /* Spacing between columns */
+            width: 100%;
+            max-width: 600px; /* Confined width for larger screens */
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
         }
 
         .header {
-            grid-column: span 3; /* Header spans all 3 columns */
-            text-align: center;
             margin-bottom: 30px;
         }
 
@@ -32,9 +37,7 @@
             color: #F1C40F;
             padding: 15px;
             border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            margin-bottom: 20px;
         }
 
         .sport-title {
@@ -60,16 +63,20 @@
             font-style: italic;
         }
 
-        /* Responsive design */
-        @media (max-width: 800px) {
+        /* Center the content for larger screens */
+        @media (min-width: 1024px) {
             .container {
-                grid-template-columns: repeat(2, 1fr); /* Switch to 2 columns on smaller screens */
+                width: 80%;
+                max-width: 960px;
+                padding: 40px;
             }
         }
 
-        @media (max-width: 500px) {
+        /* Ensure readability for smaller screens */
+        @media (max-width: 768px) {
             .container {
-                grid-template-columns: 1fr; /* Switch to 1 column on mobile */
+                max-width: 100%;
+                padding: 15px;
             }
         }
     </style>
