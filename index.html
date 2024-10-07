@@ -54,10 +54,10 @@
         .day-title {
             font-size: 16px;
             font-weight: bold;
-            color: #4a4a4a;
+            color: #FFD700; /* Neon gold color */
             margin-bottom: 10px;
             text-align: left;
-            border-bottom: 2px solid #ccc;
+            border-bottom: 2px solid #FFD700; /* Neon gold border */
             width: 100%;
         }
 
@@ -68,7 +68,7 @@
             border-radius: 5px;
             font-size: 14px;
             color: #333;
-            border-left: 4px solid #4a90e2;
+            border-left: 4px solid #FFD700; /* Neon gold accent */
         }
 
         .schedule-item p {
@@ -78,6 +78,13 @@
         .schedule-item .location {
             font-style: italic;
             color: #999;
+        }
+
+        /* Sports name styling */
+        .sports-name {
+            color: #FFD700;
+            font-weight: bold;
+            font-size: 15px;
         }
 
         @media (max-width: 800px) {
@@ -125,18 +132,19 @@
             const cells = row.split(',');
 
             if (cells[0] && cells[1] && cells[2] && cells[3]) {
-                addSchedule(scheduleData, cells[1], cells[2], cells[3]);
+                addSchedule(scheduleData, cells[0], cells[1], cells[2], cells[3]);
             }
             if (cells[4] && cells[5] && cells[6]) {
-                addSchedule(scheduleData, cells[4], cells[5], cells[6]);
+                addSchedule(scheduleData, cells[0], cells[4], cells[5], cells[6]);
             }
         });
 
         return scheduleData;
     }
 
-    function addSchedule(scheduleData, day, time, location) {
+    function addSchedule(scheduleData, sportName, day, time, location) {
         const schedule = {
+            sportName: sportName,
             day: day,
             time: time,
             location: location
@@ -161,10 +169,18 @@
                     const scheduleItem = document.createElement('div');
                     scheduleItem.classList.add('schedule-item');
 
+                    // Display sports name
+                    const sportName = document.createElement('p');
+                    sportName.classList.add('sports-name');
+                    sportName.innerText = schedule.sportName;
+                    scheduleItem.appendChild(sportName);
+
+                    // Display time
                     const time = document.createElement('p');
                     time.innerText = schedule.time;
                     scheduleItem.appendChild(time);
 
+                    // Display location
                     const location = document.createElement('p');
                     location.classList.add('location');
                     location.innerText = schedule.location;
