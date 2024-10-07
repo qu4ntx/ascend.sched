@@ -23,7 +23,7 @@
             margin-bottom: 30px;
         }
 
-        .day-container {
+        .sport-container {
             background-color: black;
             color: #F1C40F;
             margin-bottom: 20px;
@@ -31,7 +31,7 @@
             border-radius: 10px;
         }
 
-        .day-title {
+        .sport-title {
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 10px;
@@ -52,11 +52,6 @@
 
         .schedule-item .location {
             font-style: italic;
-        }
-
-        .no-schedule {
-            font-size: 18px;
-            color: #333;
         }
     </style>
 </head>
@@ -90,78 +85,72 @@
             const cells = row.split(',');
 
             // Handle Schedule 1
-            if (cells[1] && cells[1] !== "Day") {
-                addSchedule(scheduleData, cells[1], cells[0], cells[2], cells[3]);
+            if (cells[0] && cells[1] !== "Day") {
+                addSchedule(scheduleData, cells[0], cells[1], cells[2], cells[3]);
             }
             // Handle Schedule 2
-            if (cells[4] && cells[4] !== "Day") {
-                addSchedule(scheduleData, cells[4], cells[0], cells[5], cells[6]);
+            if (cells[0] && cells[4] !== "Day") {
+                addSchedule(scheduleData, cells[0], cells[4], cells[5], cells[6]);
             }
             // Handle Schedule 3
-            if (cells[7] && cells[7] !== "Day") {
-                addSchedule(scheduleData, cells[7], cells[0], cells[8], cells[9]);
+            if (cells[0] && cells[7] !== "Day") {
+                addSchedule(scheduleData, cells[0], cells[7], cells[8], cells[9]);
             }
         });
 
         return scheduleData;
     }
 
-    function addSchedule(scheduleData, day, name, time, location) {
+    function addSchedule(scheduleData, sport, day, time, location) {
         const schedule = {
-            name: name,
+            day: day,
             time: time || "TBA",  // Default to TBA if empty
             location: location || "Location TBA"  // Default to TBA if empty
         };
 
-        if (schedule.name) {
-            const dayIndex = scheduleData.findIndex(data => data.day === day);
-            if (dayIndex !== -1) {
-                scheduleData[dayIndex].schedules.push(schedule);
-            } else {
-                scheduleData.push({
-                    day: day,
-                    schedules: [schedule]
-                });
-            }
+        const sportIndex = scheduleData.findIndex(data => data.sport === sport);
+        if (sportIndex !== -1) {
+            scheduleData[sportIndex].schedules.push(schedule);
+        } else {
+            scheduleData.push({
+                sport: sport,
+                schedules: [schedule]
+            });
         }
     }
 
     function renderSchedule(scheduleData) {
         const container = document.getElementById('schedule');
-        scheduleData.forEach(dayData => {
-            const dayContainer = document.createElement('div');
-            dayContainer.classList.add('day-container');
+        scheduleData.forEach(sportData => {
+            const sportContainer = document.createElement('div');
+            sportContainer.classList.add('sport-container');
 
-            const dayTitle = document.createElement('h2');
-            dayTitle.classList.add('day-title');
-            dayTitle.innerText = dayData.day;
-            dayContainer.appendChild(dayTitle);
+            const sportTitle = document.createElement('h2');
+            sportTitle.classList.add('sport-title');
+            sportTitle.innerText = sportData.sport;
+            sportContainer.appendChild(sportTitle);
 
-            let previousLocation = '';
-            dayData.schedules.forEach(schedule => {
+            sportData.schedules.forEach(schedule => {
                 const scheduleItem = document.createElement('div');
                 scheduleItem.classList.add('schedule-item');
 
-                const name = document.createElement('p');
-                name.innerText = schedule.name;
-                scheduleItem.appendChild(name);
+                const day = document.createElement('p');
+                day.innerText = schedule.day;
+                scheduleItem.appendChild(day);
 
                 const time = document.createElement('p');
                 time.innerText = schedule.time;
                 scheduleItem.appendChild(time);
 
-                if (schedule.location !== previousLocation) {
-                    const location = document.createElement('p');
-                    location.classList.add('location');
-                    location.innerText = schedule.location;
-                    scheduleItem.appendChild(location);
-                    previousLocation = schedule.location;
-                }
+                const location = document.createElement('p');
+                location.classList.add('location');
+                location.innerText = schedule.location;
+                scheduleItem.appendChild(location);
 
-                dayContainer.appendChild(scheduleItem);
+                sportContainer.appendChild(scheduleItem);
             });
 
-            container.appendChild(dayContainer);
+            container.appendChild(sportContainer);
         });
     }
 
