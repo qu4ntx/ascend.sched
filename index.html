@@ -69,6 +69,7 @@
             font-size: 14px;
             color: #333;
             display: flex;
+            justify-content: space-between; /* Aligns content inside each item properly */
             align-items: center;
             border-left: 4px solid #FFCC00; /* Accent color applied only to the left */
         }
@@ -82,20 +83,39 @@
             color: #666;
         }
 
-        /* Accent color block for sports */
-        .schedule-item .accent-block {
+        /* Ensure sport name, time, and location align well */
+        .schedule-item .time,
+        .schedule-item .location,
+        .schedule-item .sport-name {
+            color: #333; /* Black or appropriate variation */
+            display: inline-block; /* Ensures they stay in line */
+        }
+
+        .time-location-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sport-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Adjust time font spacing and fix PM/AM placement */
+        .time-wrapper {
+            margin-left: 5px;
+        }
+
+        .time-wrapper .time {
+            font-size: 14px;
+        }
+
+        .accent-block {
             background-color: #FFCC00;
             width: 4px;
             height: 100%;
             margin-right: 10px;
             border-radius: 3px 0 0 3px; /* Rounded left side */
-        }
-
-        /* Adjust font colors */
-        .schedule-item .time,
-        .schedule-item .location,
-        .schedule-item .sport-name {
-            color: #333; /* Black or appropriate variation */
         }
 
         @media (max-width: 800px) {
@@ -191,24 +211,34 @@
                 accentBlock.classList.add('accent-block');
                 scheduleItem.appendChild(accentBlock);
 
+                // Wrapper for sport name and time
+                const sportWrapper = document.createElement('div');
+                sportWrapper.classList.add('sport-wrapper');
+
                 // Display sport name
                 const sportName = document.createElement('p');
                 sportName.classList.add('sport-name');
                 sportName.innerText = schedule.sportName;
-                scheduleItem.appendChild(sportName);
+                sportWrapper.appendChild(sportName);
+
+                // Time and location wrapper
+                const timeLocationWrapper = document.createElement('div');
+                timeLocationWrapper.classList.add('time-location-wrapper');
 
                 // Display time
                 const time = document.createElement('p');
                 time.classList.add('time');
                 time.innerText = schedule.time;
-                scheduleItem.appendChild(time);
+                timeLocationWrapper.appendChild(time);
 
                 // Display location
                 const location = document.createElement('p');
                 location.classList.add('location');
                 location.innerText = schedule.location;
-                scheduleItem.appendChild(location);
+                timeLocationWrapper.appendChild(location);
 
+                scheduleItem.appendChild(sportWrapper);
+                scheduleItem.appendChild(timeLocationWrapper);
                 dayContainer.appendChild(scheduleItem);
             });
 
