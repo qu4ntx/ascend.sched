@@ -6,7 +6,7 @@
     <title>ASCEND Club Schedule</title>
     <style>
         body {
-            background-color: #fafafa; /* light background */
+            background-color: #fafafa;
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
@@ -68,10 +68,7 @@
             border-radius: 5px;
             font-size: 14px;
             color: #333;
-            display: flex;
-            justify-content: space-between; /* Aligns content inside each item properly */
-            align-items: center;
-            border-left: 4px solid #FFCC00; /* Accent color applied only to the left */
+            border-left: 4px solid #d4af37; /* dark gold accent color */
         }
 
         .schedule-item p {
@@ -80,42 +77,7 @@
 
         .schedule-item .location {
             font-style: italic;
-            color: #666;
-        }
-
-        /* Ensure sport name, time, and location align well */
-        .schedule-item .time,
-        .schedule-item .location,
-        .schedule-item .sport-name {
-            color: #333; /* Black or appropriate variation */
-            display: inline-block; /* Ensures they stay in line */
-        }
-
-        .time-location-wrapper {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sport-wrapper {
-            display: flex;
-            align-items: center;
-        }
-
-        /* Adjust time font spacing and fix PM/AM placement */
-        .time-wrapper {
-            margin-left: 5px;
-        }
-
-        .time-wrapper .time {
-            font-size: 14px;
-        }
-
-        .accent-block {
-            background-color: #FFCC00;
-            width: 4px;
-            height: 100%;
-            margin-right: 10px;
-            border-radius: 3px 0 0 3px; /* Rounded left side */
+            color: #999;
         }
 
         @media (max-width: 800px) {
@@ -173,12 +135,12 @@
         return scheduleData;
     }
 
-    function addSchedule(scheduleData, day, time, location, sportName) {
+    function addSchedule(scheduleData, day, time, location, sport) {
         const schedule = {
             day: day,
             time: time,
             location: location,
-            sportName: sportName
+            sport: sport
         };
         scheduleData.push(schedule);
     }
@@ -186,7 +148,7 @@
     function renderSchedule(scheduleData) {
         const container = document.getElementById('schedule');
         const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-        
+
         daysOfWeek.forEach(day => {
             const dayContainer = document.createElement('div');
             dayContainer.classList.add('day-container');
@@ -196,49 +158,33 @@
             dayTitle.innerText = day;
             dayContainer.appendChild(dayTitle);
 
-            // Filter schedules for the current day
-            let daySchedules = scheduleData.filter(schedule => schedule.day === day);
+            const daySchedules = scheduleData.filter(schedule => schedule.day === day);
 
-            // Sort schedules by time (convert times to 24-hour format)
-            daySchedules.sort((a, b) => convertTo24Hour(a.time) - convertTo24Hour(b.time));
+            // Sort by time (chronologically)
+            daySchedules.sort((a, b) => {
+                const timeA = convertTimeTo24Hour(a.time);
+                const timeB = convertTimeTo24Hour(b.time);
+                return timeA.localeCompare(timeB);
+            });
 
             daySchedules.forEach(schedule => {
                 const scheduleItem = document.createElement('div');
                 scheduleItem.classList.add('schedule-item');
 
-                // Display accent color block
-                const accentBlock = document.createElement('div');
-                accentBlock.classList.add('accent-block');
-                scheduleItem.appendChild(accentBlock);
+                const sport = document.createElement('p');
+                sport.innerText = schedule.sport;
+                sport.style.fontWeight = "bold";  // Bold for sport name
+                scheduleItem.appendChild(sport);
 
-                // Wrapper for sport name and time
-                const sportWrapper = document.createElement('div');
-                sportWrapper.classList.add('sport-wrapper');
-
-                // Display sport name
-                const sportName = document.createElement('p');
-                sportName.classList.add('sport-name');
-                sportName.innerText = schedule.sportName;
-                sportWrapper.appendChild(sportName);
-
-                // Time and location wrapper
-                const timeLocationWrapper = document.createElement('div');
-                timeLocationWrapper.classList.add('time-location-wrapper');
-
-                // Display time
                 const time = document.createElement('p');
-                time.classList.add('time');
                 time.innerText = schedule.time;
-                timeLocationWrapper.appendChild(time);
+                scheduleItem.appendChild(time);
 
-                // Display location
                 const location = document.createElement('p');
                 location.classList.add('location');
                 location.innerText = schedule.location;
-                timeLocationWrapper.appendChild(location);
+                scheduleItem.appendChild(location);
 
-                scheduleItem.appendChild(sportWrapper);
-                scheduleItem.appendChild(timeLocationWrapper);
                 dayContainer.appendChild(scheduleItem);
             });
 
@@ -246,19 +192,16 @@
         });
     }
 
-    // Helper function to convert 12-hour time format to 24-hour format (as a number for sorting)
-    function convertTo24Hour(time) {
-        const [hours, minutes] = time.split(/[: ]/);  // Split time string into components (hours, minutes)
-        let period = time.slice(-2).toUpperCase();    // Extract AM/PM
-
-        let hourNum = parseInt(hours);
-        if (period === 'PM' && hourNum < 12) {
-            hourNum += 12;
+    function convertTimeTo24Hour(timeStr) {
+        const [time, modifier] = timeStr.split(' ');
+        let [hours, minutes] = time.split(':');
+        if (modifier === 'PM' && hours !== '12') {
+            hours = parseInt(hours, 10) + 12;
         }
-        if (period === 'AM' && hourNum === 12) {
-            hourNum = 0;
+        if (modifier === 'AM' && hours === '12') {
+            hours = '00';
         }
-        return hourNum * 60 + parseInt(minutes);  // Return the total minutes since midnight
+        return `${hours}:${minutes}`;
     }
 
     document.addEventListener('DOMContentLoaded', fetchAndRenderSchedule);
