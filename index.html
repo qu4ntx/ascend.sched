@@ -6,7 +6,7 @@
     <title>ASCEND Club Schedule</title>
     <style>
         body {
-            background-color: #fafafa;
+            background-color: #fafafa; /* light background */
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
@@ -29,11 +29,8 @@
         .header {
             text-align: center;
             margin-bottom: 20px;
-        }
-
-        .header img {
-            max-width: 300px;
-            height: auto;
+            font-size: 24px;
+            color: #333;
         }
 
         /* Grid layout */
@@ -71,7 +68,9 @@
             border-radius: 5px;
             font-size: 14px;
             color: #333;
-            border-left: 4px solid #FFC000; /* Updated accent color */
+            border-left: 4px solid #FFC000; /* accent color */
+            width: 100%; /* Ensure boxes take full available width */
+            box-sizing: border-box; /* Ensures padding is included within the width */
         }
 
         .schedule-item p {
@@ -100,7 +99,7 @@
 
 <div class="container">
     <div class="header">
-        <img src="ascend.sched.svg" alt="ASCEND Logo"> <!-- Replacing title with SVG -->
+        <img src="ascend.sched.svg" alt="ASCEND Logo" width="200px">
     </div>
     <div class="schedule-grid" id="schedule">
         <!-- Schedule will be populated here -->
@@ -151,7 +150,6 @@
     function renderSchedule(scheduleData) {
         const container = document.getElementById('schedule');
         const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
         daysOfWeek.forEach(day => {
             const dayContainer = document.createElement('div');
             dayContainer.classList.add('day-container');
@@ -161,22 +159,20 @@
             dayTitle.innerText = day;
             dayContainer.appendChild(dayTitle);
 
-            const daySchedules = scheduleData.filter(schedule => schedule.day === day);
-
-            // Sort by time (chronologically)
-            daySchedules.sort((a, b) => {
-                const timeA = convertTimeTo24Hour(a.time);
-                const timeB = convertTimeTo24Hour(b.time);
-                return timeA.localeCompare(timeB);
+            const filteredSchedule = scheduleData.filter(schedule => schedule.day === day);
+            filteredSchedule.sort((a, b) => {
+                const timeA = parseTime(a.time);
+                const timeB = parseTime(b.time);
+                return timeA - timeB;
             });
 
-            daySchedules.forEach(schedule => {
+            filteredSchedule.forEach(schedule => {
                 const scheduleItem = document.createElement('div');
                 scheduleItem.classList.add('schedule-item');
 
                 const sport = document.createElement('p');
                 sport.innerText = schedule.sport;
-                sport.style.fontWeight = "bold";  // Bold for sport name
+                sport.style.fontWeight = "bold";  /* Sport name should be bold */
                 scheduleItem.appendChild(sport);
 
                 const time = document.createElement('p');
@@ -195,16 +191,11 @@
         });
     }
 
-    function convertTimeTo24Hour(timeStr) {
-        const [time, modifier] = timeStr.split(' ');
-        let [hours, minutes] = time.split(':');
-        if (modifier === 'PM' && hours !== '12') {
-            hours = parseInt(hours, 10) + 12;
-        }
-        if (modifier === 'AM' && hours === '12') {
-            hours = '00';
-        }
-        return `${hours}:${minutes}`;
+    function parseTime(timeString) {
+        const timeParts = timeString.split(':');
+        const hours = parseInt(timeParts[0], 10);
+        const minutes = parseInt(timeParts[1], 10);
+        return hours * 60 + minutes;
     }
 
     document.addEventListener('DOMContentLoaded', fetchAndRenderSchedule);
