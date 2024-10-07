@@ -85,32 +85,45 @@
 
     function processCSVData(rows) {
         const scheduleData = [];
-        rows.slice(1).forEach(row => { // Start from row 1 to skip headers
+
+        rows.slice(1).forEach(row => {  // Start from row 1 to skip headers
             const cells = row.split(',');
 
-            // Check for valid day (skip any rows without a day value)
+            // Handle Schedule 1
             if (cells[1] && cells[1] !== "Day") {
-                const dayIndex = scheduleData.findIndex(data => data.day === cells[1]);
-
-                const schedule = {
-                    name: cells[0],  // Name of the activity
-                    time: cells[2] || "TBA",  // Time (default to TBA if empty)
-                    location: cells[3] || "Location TBA" // Location (default to TBA if empty)
-                };
-
-                if (schedule.name) {
-                    if (dayIndex !== -1) {
-                        scheduleData[dayIndex].schedules.push(schedule);
-                    } else {
-                        scheduleData.push({
-                            day: cells[1],
-                            schedules: [schedule]
-                        });
-                    }
-                }
+                addSchedule(scheduleData, cells[1], cells[0], cells[2], cells[3]);
+            }
+            // Handle Schedule 2
+            if (cells[4] && cells[4] !== "Day") {
+                addSchedule(scheduleData, cells[4], cells[0], cells[5], cells[6]);
+            }
+            // Handle Schedule 3
+            if (cells[7] && cells[7] !== "Day") {
+                addSchedule(scheduleData, cells[7], cells[0], cells[8], cells[9]);
             }
         });
+
         return scheduleData;
+    }
+
+    function addSchedule(scheduleData, day, name, time, location) {
+        const schedule = {
+            name: name,
+            time: time || "TBA",  // Default to TBA if empty
+            location: location || "Location TBA"  // Default to TBA if empty
+        };
+
+        if (schedule.name) {
+            const dayIndex = scheduleData.findIndex(data => data.day === day);
+            if (dayIndex !== -1) {
+                scheduleData[dayIndex].schedules.push(schedule);
+            } else {
+                scheduleData.push({
+                    day: day,
+                    schedules: [schedule]
+                });
+            }
+        }
     }
 
     function renderSchedule(scheduleData) {
