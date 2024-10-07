@@ -33,7 +33,7 @@
             margin-bottom: 20px;
             padding: 10px;
             border-radius: 10px;
-            width: 30%; /* Three columns layout */
+            width: 30%; /* Set to 3 columns */
             box-sizing: border-box;
         }
 
@@ -62,13 +62,13 @@
 
         @media (max-width: 800px) {
             .sport-container {
-                width: 45%; /* Two columns layout for smaller screens */
+                width: 45%; /* Switch to 2 columns on smaller screens */
             }
         }
 
         @media (max-width: 500px) {
             .sport-container {
-                width: 100%; /* Single column layout for mobile */
+                width: 100%; /* Switch to 1 column on mobile */
             }
         }
     </style>
@@ -103,15 +103,15 @@
             const cells = row.split(',');
 
             // Handle Schedule 1
-            if (cells[0] && cells[1] !== "Day") {
+            if (cells[0] && cells[1] && cells[2] && cells[3]) {
                 addSchedule(scheduleData, cells[0], cells[1], cells[2], cells[3]);
             }
             // Handle Schedule 2
-            if (cells[0] && cells[4] !== "Day") {
+            if (cells[0] && cells[4] && cells[5] && cells[6]) {
                 addSchedule(scheduleData, cells[0], cells[4], cells[5], cells[6]);
             }
             // Handle Schedule 3
-            if (cells[0] && cells[7] !== "Day") {
+            if (cells[0] && cells[7] && cells[8] && cells[9]) {
                 addSchedule(scheduleData, cells[0], cells[7], cells[8], cells[9]);
             }
         });
@@ -122,8 +122,8 @@
     function addSchedule(scheduleData, sport, day, time, location) {
         const schedule = {
             day: day,
-            time: time || "TBA",  // Default to TBA if empty
-            location: location || "Location TBA"  // Default to TBA if empty
+            time: time,
+            location: location
         };
 
         const sportIndex = scheduleData.findIndex(data => data.sport === sport);
