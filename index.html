@@ -16,25 +16,25 @@
         .container {
             width: 80%;
             margin: 20px auto;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columns */
+            gap: 20px; /* Spacing between columns */
         }
 
         .header {
+            grid-column: span 3; /* Header spans all 3 columns */
             text-align: center;
             margin-bottom: 30px;
-            width: 100%;
         }
 
         .sport-container {
             background-color: black;
             color: #F1C40F;
-            margin-bottom: 20px;
-            padding: 10px;
+            padding: 15px;
             border-radius: 10px;
-            width: 30%; /* Set to 3 columns */
-            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .sport-title {
@@ -60,15 +60,16 @@
             font-style: italic;
         }
 
+        /* Responsive design */
         @media (max-width: 800px) {
-            .sport-container {
-                width: 45%; /* Switch to 2 columns on smaller screens */
+            .container {
+                grid-template-columns: repeat(2, 1fr); /* Switch to 2 columns on smaller screens */
             }
         }
 
         @media (max-width: 500px) {
-            .sport-container {
-                width: 100%; /* Switch to 1 column on mobile */
+            .container {
+                grid-template-columns: 1fr; /* Switch to 1 column on mobile */
             }
         }
     </style>
